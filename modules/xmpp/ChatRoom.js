@@ -742,6 +742,13 @@ export default class ChatRoom extends Listenable {
             this.discoRoomInfo();
         }
 
+        const containsJson = true; // Detect if the message should be parsed
+        if (containsJson) {
+            // Extract and parse the JSON
+            let json = JSON.parse(txt);
+            this.eventEmitter.emit(XMPPEvents.SOMETHING_ELSE, from, json);
+        }
+
         if (txt) {
             logger.log('chat', nick, txt);
             this.eventEmitter.emit(XMPPEvents.MESSAGE_RECEIVED,

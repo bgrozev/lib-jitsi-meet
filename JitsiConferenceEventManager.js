@@ -461,6 +461,9 @@ JitsiConferenceEventManager.prototype.setupRTCListeners = function() {
             }
         });
 
+     // Something similar for messages originating from the MUC. Fire the same
+     // event ( JitsiConferenceEvents.ENDPOINT_MESSAGE_RECEIVED )
+
     rtc.addListener(RTCEvents.LOCAL_UFRAG_CHANGED,
         (tpc, ufrag) => {
             if (!tpc.isP2P) {
