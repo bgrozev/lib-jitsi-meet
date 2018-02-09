@@ -432,6 +432,39 @@ export default class ChatRoom extends Listenable {
                 && this.options.hiddenDomain
                     === jid.substring(jid.indexOf('@') + 1, jid.indexOf('/'));
 
+        if (member.isFocus)
+        {
+            logger.warn("presence from the focus");
+            // <reactions>
+            //   <endpoint id="target">
+            //     <reaction id="poop" count="5"/>
+            //     <reaction id="turd" count="1"/>
+            //   </endpoint>
+            // </reactions>
+            let endpoints = $(pres).find('>reactions>endpoint');
+            logger.warn("presence from the focus: endpoints" + endpoints);
+            if (endpoints) {
+                for (let i = 0; i < endpoints.length; i++) {
+                    let endpoint = endpoints.get(i);
+                    let endpointId = $(endpoint).attr('id');
+                    let reactions = $(endpoint).find('reaction');
+                    logger.warn("presence from the focus: reactions for " + endpointId+" "+ reactions);
+                    if (reactions) {
+                        logger.warn("presence from the focus: reactions for " + endpointId+" length="+ reactions.length);
+                        for (let j = 0; j < reactions.length; j++){
+                            let reaction = reactions.get(j).getAttribute('id');
+                            let count = reactions.get(j).getAttribute('count');
+                            this.fireReactionCount(endpointId, reaction, count);
+                        }
+
+                    }
+                }
+            }
+
+            window.pres = pres;
+
+        }
+
         $(pres).find('>x').remove();
         const nodes = [];
 
@@ -620,6 +653,11 @@ export default class ChatRoom extends Listenable {
                 this.recording.handleJibriPresence(jibri);
             }
         }
+    }
+
+    fireReactionCount(endpointId, reaction, count) {
+        logger.warn("fire xmpp.reaction.count "+endpointId+" "+reaction+" "+count);
+        this.eventEmitter.emit('xmpp.reaction.count', endpointId, reaction, count)
     }
 
     /**

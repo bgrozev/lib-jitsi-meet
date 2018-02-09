@@ -309,6 +309,14 @@ JitsiConferenceEventManager.prototype.setupChatRoomListeners = function() {
                 JitsiConferenceEvents.MESSAGE_RECEIVED,
                 id, txt, ts);
         });
+    chatRoom.addListener(
+        'xmpp.reaction.count',
+        (endpointId, reaction, count) => {
+            console.log("FIRE reaction count: "+endpointId+" "+reaction+" "+count);
+                conference.eventEmitter.emit(
+                    'reaction.count', endpointId, reaction, count);
+        }
+    );
 
     chatRoom.addListener(
         XMPPEvents.PRIVATE_MESSAGE_RECEIVED,

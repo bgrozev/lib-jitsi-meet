@@ -22,6 +22,8 @@ class SpeakerStats {
         this._isLocalStats = isLocalStats || false;
         this.setIsDominantSpeaker(false);
         this.totalDominantSpeakerTime = 0;
+        this.poopCount = 0;
+        this.heartCount = 0;
         this._dominantSpeakerStart = null;
         this._hasLeft = false;
     }
@@ -52,6 +54,12 @@ class SpeakerStats {
      */
     setDisplayName(newName) {
         this.displayName = newName;
+    }
+    setPoopCount(c) {
+        this.poopCount = Number(c);
+    }
+    setHeartCount(c) {
+        this.heartCount = Number(c);
     }
 
     /**
@@ -107,6 +115,14 @@ class SpeakerStats {
         }
 
         return total;
+    }
+
+    getPoopCount()
+    {
+        return this.poopCount;
+    }
+    getHeartCount() {
+        return this.heartCount;
     }
 
     /**

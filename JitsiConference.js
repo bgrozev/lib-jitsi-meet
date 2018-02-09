@@ -1019,6 +1019,7 @@ JitsiConference.prototype.unlock = function() {
  * @throws NetworkError or InvalidStateError or Error if the operation fails.
  */
 JitsiConference.prototype.selectParticipant = function(participantId) {
+    this.selectedEndpointId = participantId;
     this.rtc.selectEndpoint(participantId);
 };
 
@@ -1030,6 +1031,7 @@ JitsiConference.prototype.selectParticipant = function(participantId) {
  * @throws NetworkError or InvalidStateError or Error if the operation fails.
  */
 JitsiConference.prototype.pinParticipant = function(participantId) {
+    this.selectedEndpointId = participantId;
     this.rtc.pinEndpoint(participantId);
 };
 
@@ -2056,8 +2058,22 @@ JitsiConference.prototype._fireIncompatibleVersionsEvent = function() {
  * @param payload {object} the payload of the message.
  * @throws NetworkError or InvalidStateError or Error if the operation fails.
  */
-JitsiConference.prototype.sendEndpointMessage = function(to, payload) {
-    this.rtc.sendChannelMessage(to, payload);
+JitsiConference.prototype.sendEndpointMessage = function(to, payload, sendThroughVideobridge = true) {
+    if (sendThroughVideobridge) {
+        this.rtc.sendChannelMessage(to, payload);
+    } else {
+        const message = JSON.stringify(
+            {
+                "jitsi-meet-muc-msg-topic": "xxx", //TODO refactor
+                payload
+            });
+
+        if (to === '') {
+            this.sendTextMessage(message);
+        } else {
+            this.sendPrivateTextMessage(to, message);
+        }
+    }
 };
 
 /**
@@ -2065,9 +2081,10 @@ JitsiConference.prototype.sendEndpointMessage = function(to, payload) {
  * @param payload {object} the payload of the message.
  * @throws NetworkError or InvalidStateError or Error if the operation fails.
  */
-JitsiConference.prototype.broadcastEndpointMessage = function(payload) {
-    this.sendEndpointMessage('', payload);
+JitsiConference.prototype.broadcastEndpointMessage = function(payload, sendThroughVideobridge = true) {
+    this.sendEndpointMessage('', payload, sendThroughVideobridge);
 };
+
 
 JitsiConference.prototype.isConnectionInterrupted = function() {
     return this.isP2PActive()

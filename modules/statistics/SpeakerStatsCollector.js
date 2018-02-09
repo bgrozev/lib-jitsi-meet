@@ -38,6 +38,20 @@ export default class SpeakerStatsCollector {
         conference.addEventListener(
             JitsiConferenceEvents.DISPLAY_NAME_CHANGED,
             this._onDisplayNameChange.bind(this));
+        conference.addEventListener(
+            'reaction.count',
+                this._onReactionCount.bind(this));
+    }
+
+    _onReactionCount(endpointId, reaction, count) {
+        let savedUser = this.stats.users[endpointId];
+        if (savedUser ) {
+          if(reaction === 'poop') {
+              savedUser.setPoopCount(count);
+          } else if ( reaction === 'heart') {
+              savedUser.setHeartCount(count);
+          }
+        }
     }
 
     /**
